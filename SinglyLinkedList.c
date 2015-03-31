@@ -6,18 +6,18 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "LinkedList.h"
+#include "List.h"
 
 /**
  * Singly-linked implementation of the linked list node
  */
-struct node_t {
+typedef struct node_t {
     int val;
     struct node_t *next;
-};
+} Node;
 
-/** LinkedList base struct */
-struct llist_t {
+/** List base struct */
+struct list_t {
     int size;
     Node *head;
 };
@@ -25,9 +25,9 @@ struct llist_t {
 /**
  * Return an empty LinkedList
  */
-LinkedList *LinkedList_new()
+List *List_new()
 {
-    LinkedList *new = (LinkedList*) malloc( sizeof(LinkedList) );
+    List *new = (List*) malloc( sizeof(List) );
     new->size = 0;
     new->head = NULL;
 
@@ -37,7 +37,7 @@ LinkedList *LinkedList_new()
 /**
  * Delete and free the LinkedList
  */
-void LinkedList_delete( LinkedList *list )
+void List_delete( List *list )
 {
     Node *entry = list->head;
 
@@ -53,7 +53,7 @@ void LinkedList_delete( LinkedList *list )
 /**
  * Returns the size of the list
  */
-int LinkedList_size( LinkedList *list )
+int List_size( List *list )
 {
     return list->size;
 }
@@ -61,7 +61,7 @@ int LinkedList_size( LinkedList *list )
 /**
  * Get integer at position [pos] in the list
  */
-int LinkedList_get( LinkedList *list, int pos )
+int List_get( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size );
 
@@ -76,7 +76,7 @@ int LinkedList_get( LinkedList *list, int pos )
 /**
  * Insert integer [val] at position [pos] in the list
  */
-void LinkedList_insert( LinkedList *list, int val, int pos )
+void List_insert( List *list, int val, int pos )
 {
     assert( pos >= 0 && pos <= list->size );
 
@@ -100,7 +100,7 @@ void LinkedList_insert( LinkedList *list, int val, int pos )
 /**
  * Removes the value at position [pos] in the list
  */
-void LinkedList_remove( LinkedList *list, int pos )
+void List_remove( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size && list->size > 0);
 
@@ -121,7 +121,7 @@ void LinkedList_remove( LinkedList *list, int pos )
 /**
  * Adds the value [val] to the front of the list
  */
-void LinkedList_push_front( LinkedList *list, int val)
+void List_push_front( List *list, int val)
 {
     Node *new = (Node*) malloc( sizeof(Node) );
     new->val = val;
@@ -134,7 +134,7 @@ void LinkedList_push_front( LinkedList *list, int val)
 /**
  * Adds the value [val] to the end of the list
  */
-void LinkedList_push_end( LinkedList *list, int val)
+void List_push_end( List *list, int val)
 {
     Node *new = (Node*) malloc( sizeof(Node) );
     new->val = val;
@@ -157,7 +157,7 @@ void LinkedList_push_end( LinkedList *list, int val)
 /**
  * Removes and returns the value at the front of the list
  */
-int LinkedList_pop_front( LinkedList *list )
+int List_pop_front( List *list )
 {
     assert( list->size > 0 );
 
@@ -174,7 +174,7 @@ int LinkedList_pop_front( LinkedList *list )
 /**
  * Removes and returns the value at the end of the list
  */
-int LinkedList_pop_end( LinkedList *list )
+int List_pop_end( List *list )
 {
     assert( list->size > 0 );
 
@@ -202,7 +202,7 @@ int LinkedList_pop_end( LinkedList *list )
 /**
  * Find the index of the first instance of value [val] in the list, or -1 if not found
  */
-int LinkedList_find( LinkedList *list, int val )
+int List_find( List *list, int val )
 {
     int idx = -1;
 
@@ -220,7 +220,7 @@ int LinkedList_find( LinkedList *list, int val )
 /**
  * Print all items in the list
  */
-void LinkedList_print( LinkedList *list )
+void List_print( List *list )
 {
     printf("[");
     Node *entry = list->head;

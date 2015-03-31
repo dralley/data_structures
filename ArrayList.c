@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "ArrayList.h"
+#include "List.h"
 
-/** ArrayList base struct */
-struct arrlist_t {
+// Default capacity of the ArrayList
+#define DEFAULT_CAPACITY 100
+
+/** List base struct */
+struct list_t {
     int size;
     int capacity;
     int *array;
@@ -15,18 +18,18 @@ struct arrlist_t {
 /**
  * Return an empty ArrayList
  */
-ArrayList *ArrayList_new()
+List *List_new()
 {
-    ArrayList *new = (ArrayList*) malloc( sizeof(ArrayList) );
-    new->array = (int*) calloc( DEFAULT_SIZE, sizeof(int) );
+    List *new = (List*) malloc( sizeof(List) );
+    new->array = (int*) calloc( DEFAULT_CAPACITY, sizeof(int) );
     new->size = 0;
-    new->capacity = DEFAULT_SIZE;
+    new->capacity = DEFAULT_CAPACITY;
 
     return new;
 }
 
 /** Delete and free the ArrayList */
-void ArrayList_delete( ArrayList *list )
+void List_delete( List *list )
 {
     free( list->array );
     free( list );
@@ -36,15 +39,16 @@ void ArrayList_delete( ArrayList *list )
  * NOT EXPOSED
  * Increase the size of the allocated array for storing elements
  */
-static void _increaseCapacity( ArrayList *list )
+static void _increaseCapacity( List *list )
 {
-    list->array = (int*) realloc( list->array, list->capacity *= 2 );
+    list->capacity *= 2;
+    list->array = (int*) realloc( list->array, list->capacity );
 }
 
 /**
  * Return the size of the list
  */
-int ArrayList_size( ArrayList *list )
+int List_size( List *list )
 {
     return list->size;
 }
@@ -52,7 +56,7 @@ int ArrayList_size( ArrayList *list )
 /**
  * Return the element at position [pos] in the list
  */
-int ArrayList_get( ArrayList *list,  int pos )
+int List_get( List *list,  int pos )
 {
     assert( pos >= 0 && pos < list->size );
 
@@ -62,7 +66,7 @@ int ArrayList_get( ArrayList *list,  int pos )
 /**
  * Insert the value [val] at position [pos] in the list
  */
-void ArrayList_insert( ArrayList *list,  int val, int pos )
+void List_insert( List *list,  int val, int pos )
 {
     assert( pos >= 0 && pos <= list->size );
 
@@ -81,7 +85,7 @@ void ArrayList_insert( ArrayList *list,  int val, int pos )
 /**
  * Remove the value at position [pos] from the list
  */
-void ArrayList_remove( ArrayList *list, int pos )
+void List_remove( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size );
 
@@ -95,7 +99,7 @@ void ArrayList_remove( ArrayList *list, int pos )
 /**
  * Add the value [val] to the front of the list
  */
-void ArrayList_push_front( ArrayList *list, int val)
+void List_push_front( List *list, int val)
 {
     if (list->size + 1 >= list->capacity) {
         _increaseCapacity( list );
@@ -112,7 +116,7 @@ void ArrayList_push_front( ArrayList *list, int val)
 /**
  * Insert value [val] at the end of the list
  */
-void ArrayList_push_end( ArrayList *list, int val)
+void List_push_end( List *list, int val)
 {
     if (list->size + 1 >= list->capacity) {
         _increaseCapacity( list );
@@ -125,7 +129,7 @@ void ArrayList_push_end( ArrayList *list, int val)
 /**
  * Remove and return the first element in the list
  */
-int ArrayList_pop_front( ArrayList *list )
+int List_pop_front( List *list )
 {
     assert( list->size > 0 );
 
@@ -142,7 +146,7 @@ int ArrayList_pop_front( ArrayList *list )
 /**
  * Remove and return the last element in the list
  */
-int ArrayList_pop_end( ArrayList *list )
+int List_pop_end( List *list )
 {
     assert( list->size > 0 );
 
@@ -155,7 +159,7 @@ int ArrayList_pop_end( ArrayList *list )
 /**
  * Find the index of the first instance of value [val] in the list, or -1 if not found
  */
-int ArrayList_find( ArrayList *list, int val )
+int List_find( List *list, int val )
 {
     assert( list->size > 0 );
 
@@ -174,7 +178,7 @@ int ArrayList_find( ArrayList *list, int val )
 /**
  * Print all items in the list
  */
-void ArrayList_print( ArrayList *list )
+void List_print( List *list )
 {
     printf("[");
     for (int i=0; i < list->size; i++) {
