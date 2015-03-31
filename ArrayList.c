@@ -131,8 +131,8 @@ int ArrayList_pop_front( ArrayList *list )
 
     int retVal = list->array[ 0 ];
 
-    for (int i=1; i < (list->size-1); i++) {
-        list->array[ i ] = list->array[ i-1 ];
+    for (int i=0; i < (list->size-1); i++) {
+        list->array[ i ] = list->array[ i+1 ];
     }
     list->size--;
 
@@ -147,10 +147,6 @@ int ArrayList_pop_end( ArrayList *list )
     assert( list->size > 0 );
 
     int retVal = list->array[ list->size-1 ];
-
-    for (int i=1; i < (list->size-1); i++) {
-        list->array[ i ] = list->array[ i-1 ];
-    }
     list->size--;
 
     return retVal;
