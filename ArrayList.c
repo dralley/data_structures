@@ -181,6 +181,7 @@ int List_find( List *list, int val )
 void List_print( List *list )
 {
     printf("[");
+
     for (int i=0; i < list->size; i++) {
         if (i != list->size - 1) {
             printf("%d, ", list->array[ i ]);
@@ -188,5 +189,6 @@ void List_print( List *list )
             printf("%d", list->array[ i ]);
         }
     }
+
     printf("]\n");
 }

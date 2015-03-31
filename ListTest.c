@@ -113,5 +113,11 @@ int main()
     ret = List_get( list, 1 );
     assert(ret == 2);
 
+    for (int i=0; i<247; i++) {
+        List_push_end( list, -1 );
+    }
+
+    assert( List_size(list) == 250 );
+
     List_delete( list );
 }

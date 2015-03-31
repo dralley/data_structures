@@ -16,7 +16,7 @@ typedef struct node_t {
     struct node_t *next;
 } Node;
 
-/** List base struct */
+/** Linked list base struct */
 struct list_t {
     int size;
     Node *head;
@@ -80,12 +80,15 @@ void List_insert( List *list, int val, int pos )
 {
     assert( pos >= 0 && pos <= list->size );
 
+    // Initialize new node
     Node *new = (Node*) malloc( sizeof(Node) );
     new->val = val;
 
     Node **pp = &list->head;
     Node *entry = list->head;
 
+    // Traverse to the point where entry is the node to be
+    // replaced by new, and pp is the 'next' pointer to entry
     for (int i=0; i<pos; i++) {
         pp = &entry->next;
         entry = entry->next;
@@ -107,11 +110,15 @@ void List_remove( List *list, int pos )
     Node **pp = &list->head;
     Node *entry = list->head;
 
+    // Traverse to the point where entry is the node to be
+    // removed, and pp is the 'next' pointer to entry
     for (int i=0; i<pos; i++) {
         pp = &entry->next;
         entry = entry->next;
     }
 
+    // Set the 'next' pointer pointing to the node to be removed
+    // to the new node
     *pp = entry->next;
     free( entry );
 
@@ -123,6 +130,7 @@ void List_remove( List *list, int pos )
  */
 void List_push_front( List *list, int val)
 {
+    // Initialize new node
     Node *new = (Node*) malloc( sizeof(Node) );
     new->val = val;
     new->next = list->head;
@@ -136,6 +144,7 @@ void List_push_front( List *list, int val)
  */
 void List_push_end( List *list, int val)
 {
+    // Inititalize new node
     Node *new = (Node*) malloc( sizeof(Node) );
     new->val = val;
     new->next = NULL;
@@ -143,12 +152,14 @@ void List_push_end( List *list, int val)
     Node **pp = &list->head;
     Node *entry = list->head;
 
+    // Traverse to the end of the list, where entry is null,
+    // and pp is the last 'next' pointer
     while (entry) {
         pp = &entry->next;
         entry = entry->next;
     }
 
-    new->next = entry;
+    // Point the last 'next' pointer to the new node
     *pp = new;
 
     list->size++;
@@ -183,17 +194,16 @@ int List_pop_end( List *list )
     Node **pp = &list->head;
     Node *entry = list->head;
 
-    while (entry) {
-        if (entry->next == NULL) {
-            retVal = entry->val;
-            free( entry );
-            *pp = NULL;
-            break;
-        }
-
+    // Traverse to the end of the list, where entry is null,
+    // and pp is the last 'next' pointer
+    while (entry && entry->next) {
         pp = &entry->next;
         entry = entry->next;
     }
+
+    retVal = entry->val;
+    free( entry );
+    *pp = NULL;
 
     list->size--;
     return retVal;
@@ -208,7 +218,6 @@ int List_find( List *list, int val )
 
     for (Node *e = list->head; e; e=e->next) {
         idx++;
-
         if (e->val == val) {
             return idx;
         }
@@ -224,6 +233,7 @@ void List_print( List *list )
 {
     printf("[");
     Node *entry = list->head;
+
     while (entry) {
         if (entry->next) {
             printf( "%d, ", entry->val );
