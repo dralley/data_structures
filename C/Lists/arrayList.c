@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "List.h"
+#include "include/list.h"
 
 // Default capacity of the ArrayList
 #define DEFAULT_CAPACITY 100

@@ -1,4 +1,6 @@
 /**
+ * @author Daniel Alley (dralley)
+ *
  * Implementation of a singly-linked list for 32-bit integers
  */
 
@@ -6,7 +8,8 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "List.h"
+/** Prototypes for the functions common to all List implementations */
+#include "include/list.h"
 
 /**
  * Singly-linked implementation of the linked list node
@@ -22,9 +25,6 @@ struct list_t {
     Node *head;
 };
 
-/**
- * Return an empty LinkedList
- */
 List *List_new()
 {
     List *new = (List*) malloc( sizeof(List) );
@@ -34,10 +34,7 @@ List *List_new()
     return new;
 }
 
-/**
- * Delete and free the LinkedList
- */
-void List_delete( List *list )
+void List_destroy( List *list )
 {
     Node *entry = list->head;
 
@@ -50,17 +47,11 @@ void List_delete( List *list )
     free( list );
 }
 
-/**
- * Returns the size of the list
- */
 int List_size( List *list )
 {
     return list->size;
 }
 
-/**
- * Get integer at position [pos] in the list
- */
 int List_get( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size );
@@ -73,9 +64,6 @@ int List_get( List *list, int pos )
     return entry->val;
 }
 
-/**
- * Insert integer [val] at position [pos] in the list
- */
 void List_insert( List *list, int val, int pos )
 {
     assert( pos >= 0 && pos <= list->size );
@@ -100,9 +88,6 @@ void List_insert( List *list, int val, int pos )
     list->size++;
 }
 
-/**
- * Removes the value at position [pos] in the list
- */
 void List_remove( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size && list->size > 0);
@@ -125,9 +110,6 @@ void List_remove( List *list, int pos )
     list->size--;
 }
 
-/**
- * Adds the value [val] to the front of the list
- */
 void List_push_front( List *list, int val)
 {
     // Initialize new node
@@ -139,9 +121,6 @@ void List_push_front( List *list, int val)
     list->size++;
 }
 
-/**
- * Adds the value [val] to the end of the list
- */
 void List_push_end( List *list, int val)
 {
     // Inititalize new node
@@ -165,9 +144,6 @@ void List_push_end( List *list, int val)
     list->size++;
 }
 
-/**
- * Removes and returns the value at the front of the list
- */
 int List_pop_front( List *list )
 {
     assert( list->size > 0 );
@@ -182,9 +158,6 @@ int List_pop_front( List *list )
     return retVal;
 }
 
-/**
- * Removes and returns the value at the end of the list
- */
 int List_pop_end( List *list )
 {
     assert( list->size > 0 );
@@ -209,9 +182,6 @@ int List_pop_end( List *list )
     return retVal;
 }
 
-/**
- * Find the index of the first instance of value [val] in the list, or -1 if not found
- */
 int List_find( List *list, int val )
 {
     int idx = -1;
@@ -226,9 +196,6 @@ int List_find( List *list, int val )
     return idx;
 }
 
-/**
- * Print all items in the list
- */
 void List_print( List *list )
 {
     printf("[");

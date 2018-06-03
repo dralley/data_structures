@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "List.h"
+#include "include/list.h"
 
 /**
  * Test implementations of "List.h" by linking them against this program
@@ -113,11 +113,12 @@ int main()
     ret = List_get( list, 1 );
     assert(ret == 2);
 
+    /** Test adding a lot of elements, mostly for ArrayList */
     for (int i=0; i<247; i++) {
         List_push_end( list, -1 );
     }
 
     assert( List_size(list) == 250 );
 
-    List_delete( list );
+    List_destroy( list );
 }
