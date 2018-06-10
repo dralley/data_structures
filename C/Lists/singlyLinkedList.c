@@ -9,7 +9,7 @@
 #include <assert.h>
 
 /** Prototypes for the functions common to all List implementations */
-#include "include/list.h"
+#include "list.h"
 
 /**
  * Singly-linked implementation of the linked list node
@@ -25,6 +25,9 @@ struct list_t {
     Node *head;
 };
 
+/**
+ * Create an empty List
+ */
 List *List_new()
 {
     List *new = (List*) malloc( sizeof(List) );
@@ -34,6 +37,9 @@ List *List_new()
     return new;
 }
 
+/**
+ * Delete and free the List
+ */
 void List_destroy( List *list )
 {
     Node *entry = list->head;
@@ -47,11 +53,17 @@ void List_destroy( List *list )
     free( list );
 }
 
+/**
+ * Return the size of the list
+ */
 int List_size( List *list )
 {
     return list->size;
 }
 
+/**
+ * Return the element at position [pos] in the list
+ */
 int List_get( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size );
@@ -64,6 +76,9 @@ int List_get( List *list, int pos )
     return entry->val;
 }
 
+/**
+ * Insert the value [val] at position [pos] in the list
+ */
 void List_insert( List *list, int val, int pos )
 {
     assert( pos >= 0 && pos <= list->size );
@@ -88,7 +103,10 @@ void List_insert( List *list, int val, int pos )
     list->size++;
 }
 
-void List_remove( List *list, int pos )
+/**
+ * Remove the value at position [pos] from the list
+ */
+int List_remove( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size && list->size > 0);
 
@@ -102,14 +120,20 @@ void List_remove( List *list, int pos )
         entry = entry->next;
     }
 
+    int ret = entry->val;
+
     // Set the 'next' pointer pointing to the node to be removed
     // to the new node
     *pp = entry->next;
     free( entry );
 
     list->size--;
+    return ret;
 }
 
+/**
+ * Add the value [val] to the front of the list
+ */
 void List_push_front( List *list, int val)
 {
     // Initialize new node
@@ -121,6 +145,9 @@ void List_push_front( List *list, int val)
     list->size++;
 }
 
+/**
+ * Insert value [val] at the end of the list
+ */
 void List_push_end( List *list, int val)
 {
     // Inititalize new node
@@ -144,6 +171,9 @@ void List_push_end( List *list, int val)
     list->size++;
 }
 
+/**
+ * Remove and return the first element in the list
+ */
 int List_pop_front( List *list )
 {
     assert( list->size > 0 );
@@ -158,6 +188,9 @@ int List_pop_front( List *list )
     return retVal;
 }
 
+/**
+ * Remove and return the last element in the list
+ */
 int List_pop_end( List *list )
 {
     assert( list->size > 0 );
@@ -182,20 +215,75 @@ int List_pop_end( List *list )
     return retVal;
 }
 
+/**
+ * Find the index of the first instance of value [val] in the list, or -1 if not found
+ */
 int List_find( List *list, int val )
 {
-    int idx = -1;
+    int idx = 0;
 
     for (Node *e = list->head; e; e=e->next) {
-        idx++;
         if (e->val == val) {
             return idx;
         }
+        idx++;
     }
 
-    return idx;
+    return -1;
 }
 
+/**
+ * Extend the list with the contents of a second list
+ */
+void List_extend( List *list, List *extend )
+{
+    Node **pp = &list->head;
+    Node *entry = list->head;
+    // Traverse to the end of the list, where entry is null,
+    // and pp is the last 'next' pointer
+    while (entry) {
+        pp = &entry->next;
+        entry = entry->next;
+    }
+
+    for (Node *e = extend->head; e; e = e->next) {
+        Node *new = (Node *)malloc(sizeof(Node));
+        new->val = e->val;
+        new->next = NULL;
+
+        *pp = new;
+        pp = &new->next;
+        list->size++;
+    }
+}
+
+/**
+ * Determine whether a list is equal to a second list
+ */
+bool List_equal(List *list1, List *list2)
+{
+    if (list1->size != list2->size)
+    {
+        return false;
+    }
+
+    Node *item1 = list1->head;
+    Node *item2 = list2->head;
+
+    for (int i=0; i<list1->size; i++) {
+        if (item1->val != item2->val) {
+            return false;
+        }
+        item1 = item1->next;
+        item2 = item2->next;
+    }
+
+    return true;
+}
+
+/**
+ * Print all items in the list
+ */
 void List_print( List *list )
 {
     printf("[");

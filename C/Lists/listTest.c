@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "include/list.h"
+#include "list.h"
 
 /**
  * Test implementations of "List.h" by linking them against this program
@@ -73,10 +73,11 @@ int main()
     assert(ret == 5);
 
     /** Test removing from the middle */
-    List_remove( list, 2 );
+    ret = List_remove( list, 2 );
+    assert(ret == 3);
     // [1, 2, 4, 5]
 
-    assert(List_size(list) == 4 );
+    assert(List_size(list) == 4);
 
     /** Test positional inserting to the middle */
     List_insert( list, 3, 2);
@@ -85,18 +86,20 @@ int main()
     assert( List_size(list) == 5);
 
     /** Test non-edge case pop end function */
-    ret = List_pop_end( list);
+    ret = List_pop_end(list);
     // [1, 2, 3, 4]
 
     assert(ret == 5);
     assert( List_size(list) == 4);
 
     /** Test positional removing from the end */
-    List_remove( list, 3 );
+    ret = List_remove( list, 3 );
+    assert(ret == 4);
     // [1, 2, 3]
 
     /** Test positional removing from the front */
-    List_remove( list, 0 );
+    ret = List_remove( list, 0 );
+    assert(ret == 1);
     // [2, 3]
 
     assert( List_size(list) == 2);
@@ -113,12 +116,33 @@ int main()
     ret = List_get( list, 1 );
     assert(ret == 2);
 
+    List *extend = List_new();
+    List_push_end(extend, 4);
+    List_push_end(extend, 5);
+    List_push_end(extend, 6);
+    // [4, 5, 6]
+
+
+    List_extend(list, extend);
+    // [1, 2, 3, 4, 5, 6]
+
+    for (int i=0; i<6; i++) {
+        assert( List_get(list, i) == i+1 );
+    }
+
     /** Test adding a lot of elements, mostly for ArrayList */
-    for (int i=0; i<247; i++) {
+    for (int i=0; i<244; i++) {
         List_push_end( list, -1 );
     }
 
     assert( List_size(list) == 250 );
 
-    List_destroy( list );
+    List *extend2 = List_new();
+    List_push_end(extend2, 4);
+    List_push_end(extend2, 5);
+    List_push_end(extend2, 6);
+
+    assert(List_equal(extend, extend2));
+
+    List_destroy(list);
 }

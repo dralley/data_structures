@@ -9,7 +9,7 @@
 #include <assert.h>
 
 /** Prototypes for the functions common to all List implementations */
-#include "include/list.h"
+#include "list.h"
 
 /**
  * Doubly-linked implementation of the linked list node
@@ -27,6 +27,9 @@ struct list_t {
     Node *tail;
 };
 
+/**
+ * Create an empty List
+ */
 List *List_new()
 {
     List *new = (List*) malloc( sizeof(List) );
@@ -37,6 +40,9 @@ List *List_new()
     return new;
 }
 
+/**
+ * Delete and free the List
+ */
 void List_destroy( List *list )
 {
     Node *entry = list->head;
@@ -50,13 +56,16 @@ void List_destroy( List *list )
     free( list );
 }
 
+/**
+ * Return the size of the list
+ */
 int List_size( List *list )
 {
     return list->size;
 }
 
 /**
- * Get integer at position [pos] in the list
+ * Return the element at position [pos] in the list
  */
 int List_get( List *list, int pos )
 {
@@ -71,134 +80,216 @@ int List_get( List *list, int pos )
 }
 
 /**
- * Insert integer [val] at position [pos] in the list
+ * Insert the value [val] at position [pos] in the list
  */
 void List_insert( List *list, int val, int pos )
 {
     assert( pos >= 0 && pos <= list->size );
 
+    Node *current = list->head;
+    for (int i = 0; i < pos; i++) {
+        current = current->next;
+    }
+
     // Initialize new node
     Node *new = (Node*) malloc( sizeof(Node) );
     new->val = val;
+    new->next = NULL;
+    new->prev = NULL;
 
-    Node **pp = &list->head;
-    Node *entry = list->head;
-
-    // Traverse to the point where entry is the node to be
-    // replaced by new, and pp is the 'next' pointer to entry
-    for (int i=0; i<pos; i++) {
-        pp = &entry->next;
-        entry = entry->next;
+    if (pos == list->size) {
+        new->prev = list->tail;
+        list->tail->next = new;
+        list->tail = new;
+    } else if (pos == 0) {
+        new->next = list->head;
+        list->head->prev = new;
+        list->head = new;
+    } else {
+        new->next = current;
+        new->prev = current->prev;
+        current->prev->next = new;
+        current->prev = new;
     }
-
-    new->next = entry;
-    *pp = new;
 
     list->size++;
 }
 
-void List_remove( List *list, int pos )
+/**
+ * Remove the value at position [pos] from the list
+ */
+int List_remove( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size && list->size > 0);
 
-    Node **pp = &list->head;
-    Node *entry = list->head;
-
-    // Traverse to the point where entry is the node to be
-    // removed, and pp is the 'next' pointer to entry
-    for (int i=0; i<pos; i++) {
-        pp = &entry->next;
-        entry = entry->next;
+    Node *current = list->head;
+    for (int i = 0; i < pos; i++) {
+        current = current->next;
     }
+    int ret = current->val;
 
-    // Set the 'next' pointer pointing to the node to be removed
-    // to the new node
-    *pp = entry->next;
-    free( entry );
+    if (pos == 0) {
+        current->next->prev = NULL;
+        list->head = current->next;
+    } else if (pos == list->size -1) {
+        current->prev->next = NULL;
+        list->tail = current->prev;
+    } else {
+        current->prev->next = current->next;
+        current->next->prev = current->prev;
+    }
+    free( current );
 
     list->size--;
+    return ret;
 }
 
+/**
+ * Add the value [val] to the front of the list
+ */
 void List_push_front( List *list, int val)
 {
     // Initialize new node
     Node *new = (Node*) malloc( sizeof(Node) );
     new->val = val;
     new->next = list->head;
+    new->prev = NULL;
 
     list->head = new;
+    list->size++;
 
-    if (list->size == 0) {
+    if (list->size == 1) {
         list->tail = new;
     }
-
-    list->size++;
 }
 
+/**
+ * Insert value [val] at the end of the list
+ */
 void List_push_end( List *list, int val)
 {
     // Inititalize new node
     Node *new = (Node*) malloc( sizeof(Node) );
     new->val = val;
     new->next = NULL;
-
-    list->tail = new;
-
-    if (list->size == 0) {
-        list->head = new;
-    }
+    new->prev = list->tail;
 
     list->size++;
+
+    if (list->size == 1) {
+        list->head = new;
+        list->tail = new;
+    } else {
+        list->tail->next = new;
+        list->tail = new;
+    }
 }
 
+/**
+ * Remove and return the first element in the list
+ */
 int List_pop_front( List *list )
 {
     assert( list->size > 0 );
 
-    Node *head = list->head;
-    int retVal = head->val;
+    Node *old_head = list->head;
+    int retVal = old_head->val;
 
-    list->head = head->next;
+    list->head = old_head->next;
 
-    if (list->size == 1) {
-        list->tail = NULL;
+    if (list->head) {
+        list->head->prev = NULL;
+    } else {
+        list->tail = list->head;
     }
 
     list->size--;
-
-    free( head );
+    free( old_head );
     return retVal;
 }
 
+/**
+ * Remove and return the last element in the list
+ */
 int List_pop_end( List *list )
 {
     assert( list->size > 0 );
 
-    int retVal = list->tail->val;
-
     Node *old_tail = list->tail;
-    list->tail = list->tail->prev;
+    int retVal = old_tail->val;
 
-    free( old_tail );
+    list->tail = old_tail->prev;
+
+    if (list->tail) {
+        list->tail->next = NULL;
+    } else {
+        list->head = list->tail;
+    }
 
     list->size--;
+    free( old_tail );
     return retVal;
 }
 
+/**
+ * Find the index of the first instance of value [val] in the list, or -1 if not found
+ */
 int List_find( List *list, int val )
 {
-    int idx = -1;
+    int idx = 0;
 
     for (Node *e = list->head; e; e=e->next) {
-        idx++;
         if (e->val == val) {
             return idx;
         }
+        idx++;
     }
 
-    return idx;
+    return -1;
 }
 
+/**
+ * Extend the list with the contents of a second list
+ */
+void List_extend(List *list, List *extend)
+{
+    for (Node *e = extend->head; e; e = e->next) {
+        Node *new = (Node *)malloc(sizeof(Node));
+        new->val = e->val;
+        new->next = NULL;
+
+        list->tail->next = new;
+        list->tail = new;
+        list->size++;
+    }
+}
+
+/**
+ * Determine whether a list is equal to a second list
+ */
+bool List_equal(List *list1, List *list2)
+{
+    if (list1->size != list2->size) {
+        return false;
+    }
+
+    Node *item1 = list1->head;
+    Node *item2 = list2->head;
+
+    for (int i = 0; i < list1->size; i++) {
+        if (item1->val != item2->val) {
+            return false;
+        }
+        item1 = item1->next;
+        item2 = item2->next;
+    }
+
+    return true;
+}
+
+/**
+ * Print all items in the list
+ */
 void List_print( List *list )
 {
     printf("[");
@@ -206,11 +297,43 @@ void List_print( List *list )
 
     while (entry) {
         if (entry->next) {
-            printf( "%d, ", entry->val );
-        } else {
-            printf( "%d", entry->val );
+            printf("%d, ", entry->val);
+        }
+        else {
+            printf("%d", entry->val);
         }
         entry = entry->next;
     }
     printf("]\n");
+    // printf("-------------------------\n");
+
+    // if (list->head != NULL) {
+    //     printf("head: %d         ", list->head->val);
+    // } else {
+    //     printf("head: NULL       ");
+    // }
+
+    // if (list->tail != NULL) {
+    //     printf("tail: %d\n", list->tail->val);
+    // } else {
+    //     printf("tail: NULL\n");
+    // }
+    // printf("-------------------------\n");
+
+    // entry = list->head;
+    // while (entry) {
+    //     printf("%d: ", entry->val);
+    //     if (entry->prev) {
+    //         printf("prev: %d    ; ", entry->prev->val);
+    //     } else {
+    //         printf("prev: NULL ; ");
+    //     }
+    //     if (entry->next) {
+    //         printf("next: %d\n", entry->next->val);
+    //     } else {
+    //         printf("next: NULL\n");
+    //     }
+    //     entry = entry->next;
+    // }
+    // printf("==========================\n");
 }

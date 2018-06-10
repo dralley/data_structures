@@ -3,11 +3,11 @@
  *
  * Function prototypes for a generic list of integers
  */
-
+#include <stdbool.h>
 #ifndef _LIST_H_
 #define _LIST_H_
 
-/** Struct impelementations in source files */
+/** Struct implementations in source files */
 typedef struct list_t List;
 
 /******** List interface ********/
@@ -58,7 +58,7 @@ void List_insert( List *list,  int val, int pos );
  * @param list List to operate on
  * @param pos  0-indexed position of the integer to remove
  */
-void List_remove( List *list, int pos );
+int List_remove( List *list, int pos );
 
 /**
  * Insert an integer to the very beginning of the List (index 0)
@@ -100,6 +100,22 @@ int List_pop_end( List *list );
  * @return      index of the first occurrence of val, or else -1 if not found
  */
 int List_find( List *list, int val );
+
+/**
+ * Append the contents of a list onto another list
+ *
+ * @param  list    List to operate on
+ * @param  extend  List to append onto the first
+ */
+void List_extend( List *list, List *extend );
+
+/**
+ * Determine whether the list is equal to a second list
+ *
+ * @param  list1  First list
+ * @param  list2  Second list
+ */
+bool List_equal( List *list1, List *list2 );
 
 /**
  * Print out the list to stdout (debugging function)

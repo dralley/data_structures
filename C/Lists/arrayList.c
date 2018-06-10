@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "include/list.h"
+#include "list.h"
 
 // Default capacity of the ArrayList
 #define DEFAULT_CAPACITY 100
@@ -16,7 +16,7 @@ struct list_t {
 
 
 /**
- * Return an empty ArrayList
+ * Create an empty ArrayList
  */
 List *List_new()
 {
@@ -28,8 +28,10 @@ List *List_new()
     return new;
 }
 
-/** Delete and free the ArrayList */
-void List_delete( List *list )
+/**
+ * Delete and free the List
+ */
+void List_destroy( List *list )
 {
     free( list->array );
     free( list );
@@ -42,7 +44,7 @@ void List_delete( List *list )
 static void _increaseCapacity( List *list )
 {
     list->capacity *= 2;
-    list->array = (int*) realloc( list->array, list->capacity );
+    list->array = (int*) realloc( list->array, list->capacity * sizeof(int) );
 }
 
 /**
@@ -85,15 +87,18 @@ void List_insert( List *list,  int val, int pos )
 /**
  * Remove the value at position [pos] from the list
  */
-void List_remove( List *list, int pos )
+int List_remove( List *list, int pos )
 {
     assert( pos >= 0 && pos < list->size );
+
+    int ret = list->array[pos];
 
     for (int i=pos; i < (list->size-1); i++) {
         list->array[ i ] = list->array[ i+1 ];
     }
 
     list->size--;
+    return ret;
 }
 
 /**
@@ -173,6 +178,38 @@ int List_find( List *list, int val )
     }
 
     return idx;
+}
+
+/**
+ * Extend the list with the contents of a second list
+ */
+void List_extend( List *list, List *extend )
+{
+    while (list->capacity < list->size + extend->size) {
+        _increaseCapacity(list);
+    }
+
+    for (int i=0; i<extend->size; i++) {
+        list->array[list->size++] = extend->array[i];
+    }
+}
+
+/**
+ * Determine whether a list is equal to a second list
+ */
+bool List_equal(List *list1, List *list2)
+{
+    if (list1->size != list2->size) {
+        return false;
+    }
+
+    for (int i=0; i<list1->size; i++) {
+        if (list1->array[i] != list2->array[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /**
